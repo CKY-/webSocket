@@ -1,0 +1,33 @@
+name: Node.js CI
+on:
+   workflow_dispatch:
+jobs:
+   build:
+      strategy:
+         matrix:
+            node-version: ["20"]
+      runs-on: ubuntu-latest
+      steps:
+         - uses: actions/checkout@v4
+         - name: Use Node.js ${{ matrix.node-version }}
+           uses: actions/setup-node@v4
+           with:
+              node-version: ${{ matrix.node-version }}
+              cache: "npm"
+         - run: npm install
+         - name: Semantic Release dry run
+           id: semantic
+           env:
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+           run: |
+              OUTPUT=$(unset GITHUB_ACTIONS && npx semantic-release --dry-run --no-ci --branches "main")
+              VERSION=$(echo "$OUTPUT" | grep -o "The next release version is [0-9]*\.[0-9]*\.[0-9]*" | awk '{print $6}')
+              echo "version=$VERSION" >> $GITHUB_OUTPUT
+         - name: Build
+           run: npm run build --if-present
+           env:
+              VER: ${{ steps.semantic.outputs.version }}
+         - name: Release
+           env:
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+           run: npx semantic-release --branches main
