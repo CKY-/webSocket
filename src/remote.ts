@@ -58,7 +58,7 @@ function maintainConnection(
         if (logging) {
           logger.debug("Connected to WebSocket server");
         }
-        if (connectionMessage != null) {
+        if (connectionMessage != null && connectionMessage != "") {
           ws.send(connectionMessage);
         }
       });

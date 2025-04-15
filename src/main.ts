@@ -33,7 +33,7 @@ const script: Firebot.CustomScript<Params> = {
       connectionMessage: {
         title: "Default Connection Message",
         type: "string",
-        default: "{\"type\": \"subscribe\"}",
+        default: `{"type": "invoke","name": "subscribe-events","id": "Raw"}`,
         description: "Default Connection Message",
         secondaryDescription: "Default Connection Message",
       },
